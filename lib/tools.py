@@ -11,6 +11,20 @@ from bs4 import BeautifulSoup
 import re
 
 
+def handle_company_name_use_black_data(objs, index):
+    """
+    采用黑名单过滤数据
+    :param c:
+    :return:
+    """
+    for obj in objs:
+        if re.search(r'([随着]|[成立])+.*?([公司]|[企业]|[集团]|[公司]|[研发中心])+', obj[index]):
+            continue
+        return obj[index]
+
+    return objs[0][index]
+
+
 def get_company_name(html):
     """
     提取公司名字
@@ -21,19 +35,19 @@ def get_company_name(html):
     r = re.findall(r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*?有限公司)', html)
 
     if r:
-        return r[0][2]
+        return handle_company_name_use_black_data(r, 2)
 
     r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?研发中心)', html)
     if r:
-        return r[0][2]
+        return handle_company_name_use_black_data(r, 2)
 
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?集团)', html)
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?是?(.*?集团)', html)
     if r:
-        return r[0][2]
+        return handle_company_name_use_black_data(r, 2)
 
     r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?公司)', html)
     if r:
-        return r[0][2]
+        return handle_company_name_use_black_data(r, 2)
 
     return "未识别的公司"
 
@@ -44,6 +58,10 @@ def get_work_citys(html):
     :param html: 一段字符串
     :return:
     """
+    html = BeautifulSoup(html, "html.parser").get_text()
+    r = re.findall(r'(工作地[点]?[:：]?){1}(可选：)?(.*)', html)
+    if r and r[0][2]:
+        return re.split(r'[#,、，\s]', r[0][2])
     return []
 
 
@@ -56,5 +74,5 @@ def get_work_position(html):
     return []
 
 
-with open('../debug_html/2.html', 'r') as fp:
-    print(get_company_name(fp.read()))
+# with open('../debug_html/2.html', 'r') as fp:
+#     print(get_work_citys(fp.read()))
