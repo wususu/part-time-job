@@ -10,6 +10,7 @@ create table if not exists jobs(
     authentication tinyint(1) not null default 0 comment '是否认证的消息，0为已认证，1为未认证',
     status tinyint(1) not null comment '状态，0为显示，1为不显示，2为删除',
     web_html text not null comment '抓取的页面html代码',
+    release_time datetime not null comment '发布时间',
     create_time datetime not null comment '创建时间',
     update_time timestamp not null comment '修改时间',
     primary key(id),
