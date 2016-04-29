@@ -11,7 +11,7 @@
 
 
 from bs4 import BeautifulSoup
-
+import tools
 
 def get_message_title_and_url_list(html):
     """
@@ -28,4 +28,4 @@ def test():
         print(get_message_title_and_url_list(fp.read()))
 
 if __name__ == '__main__':
-    test()
+    print("test")

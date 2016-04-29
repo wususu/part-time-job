@@ -9,12 +9,31 @@
 
 from bs4 import BeautifulSoup
 import re
+import requests
 
 def text_filter(text):
-    filter_strs=["\xa0","\ufffd","\u200b"]
+    filter_strs=["\xa0","\ufffd","\u200b","\u2022"]
     for filter_str in filter_strs:
         text=text.replace(filter_str,"")
     return text
+
+def get_html(url):
+    response = requests.get(url)
+    return response.content
+
+def get_html_t(url):
+    response = requests.get(url)
+    return response.text
+
+def get_release_time(html):
+    html = BeautifulSoup(html, "html.parser").get_text()
+    r=re.findall(r"(\d{4}\-\d+\-\d+)",html)
+    if r:
+        return r[0]
+
+    r=re.findall(r"(\d+\-\d+)发布",html)
+    if r:
+        return r[0]
 
 def handle_company_name_use_black_data(objs, index):
     """

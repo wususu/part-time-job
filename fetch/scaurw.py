@@ -9,18 +9,22 @@
 抓取入口：http://rw.scaunet.com/Web/Article.aspx?cid=1081
 """
 
-url_hire = "http://rw.scaunet.com/Web/Article.aspx?cid=1081"
+url_hire = "http://rw.scaunet.com/Web/Article.aspx?cid=1081&page={0}"
 url_host = "http://rw.scaunet.com/Web/"
 
 from bs4 import BeautifulSoup
 import requests
 from tools import *
-def get_message_title_and_url_list(html):
+from gevent import monkey;monkey.patch_socket()
+from gevent.pool import Pool
+def get_message_title_and_url_list(page):
     """
-    提取兼职信息列表的信息标题和跳转地址
+    提取第page页的兼职信息列表的信息标题、跳转地址和发布时间
     :param html:
     :return:
     """
+    url=url_hire.format(page)
+    html=get_html(url)
     result = []
     soup = BeautifulSoup(html, "html.parser")
     a_s = soup.select("table a")
@@ -30,26 +34,52 @@ def get_message_title_and_url_list(html):
         result.append((title,link))
     return result
 
+def get_page_num():
+    url=url_hire.format(1)
+    html=get_html_t(url)
+    page_re=re.findall(r"总：(\d+) 页",html)
+    return int(page_re[-1])
+
 def get_message_jobs(url):
     """
     获取招聘信息
     """
+    info={}
     html = get_html(url)
     company_name = get_company_name(html)
     work_city = get_work_citys(html)
     work_position = get_work_position(html)
-    return text_filter(company_name)
+    release_time=get_release_time(html)
 
-def get_html(url):
-    response = requests.get(url)
-    return response.content
+    info['release_time']=release_time
+    info['web_html']=html
+    info['company']=company_name
+    info['work_city']=work_city
+    info['position']=work_position
+    return info
 
-def test():
-    html = get_html(url_hire)
-    infos = get_message_title_and_url_list(html)
-    for name,url in infos:
-        print(get_message_jobs(url_host+url))
+
+def fetch():
+    result=[]
+    infos = get_message_title_and_url_list(1)
+
+    def tmp(info):
+        title,link=info
+        url=url_host+link
+        info={}
+        info['title']=text_filter(title)
+        info['web_url']=url
+        info['message_source']="生命科学学院官网"
+        info['job_type']=0
+        info['authentication']=0
+        info.update(get_message_jobs(url))
+        result.append(info)
+        print(info['title'],info['release_time'])
+
+    p=Pool(10)
+    p.map(tmp,infos)
+    return result
 
 if __name__ == '__main__':
-    test()
-    # get_html()
+    fetch()
+    # print(get_page_num())
