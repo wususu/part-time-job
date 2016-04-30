@@ -79,7 +79,7 @@ def get_all_page_of_work():
         if len(objs) < 15:
             break
         page += 1
-    messages = map(handle_job_message, messages)
+    messages = list(map(handle_job_message, messages))
     return messages
 
 if __name__ == '__main__':

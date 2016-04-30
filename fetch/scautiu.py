@@ -99,7 +99,7 @@ def get_all_page_html():
             break
 
         page += 1
-
+    messages = list(map(handle_job_message, messages))
     return messages
 
 
