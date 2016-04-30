@@ -9,6 +9,7 @@
 
 from bs4 import BeautifulSoup
 from config.citys import citys
+from config.position import positions
 import re
 import time
 import random
@@ -84,13 +85,19 @@ def get_work_citys(html):
             r.append(city)
     return r
 
+
 def get_work_position(html):
     """
     获取职位
     :param html: 一段字符串
     :return:
     """
-    return []
+    html = BeautifulSoup(html, "html.parser").get_text()
+    r = []
+    for p in positions:
+        if html.find(p) != -1:
+            r.append(p)
+    return r
 
 
 def get_real_time(time_str):
