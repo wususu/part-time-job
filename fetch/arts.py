@@ -33,8 +33,6 @@ def handle_job_message(obj):
     obj['company'] = tools.get_company_name(obj['web_html'])
     obj['position'] = tools.get_work_position(obj['web_html'])
     obj['work_city'] = tools.get_work_citys(obj['web_html'])
-    print(obj)
-    exit()
     return obj
 
 
@@ -58,7 +56,7 @@ def get_message_title_and_url_list(html):
         if not span_label or not a_label or 'href' not in a_label.attrs:
             continue
         r.append({"web_url": message_url_prefix + a_label['href'], "title": a_label.string, "release_time": span_label.string})
-        
+
     return r
 
 
