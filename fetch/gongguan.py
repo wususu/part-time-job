@@ -11,7 +11,8 @@
 
 
 from bs4 import BeautifulSoup
-from lib import tools
+from lib import tools, dao
+from lib.logging_lib import log
 import requests
 
 
@@ -52,11 +53,13 @@ def handle_job_message(obj):
     :param obj:
     :return:
     """
+    tools.sleep_some_time()
     response = requests.get(obj['web_url'])
     if response.status_code != 200:
+        log.error("网址（%s）无法访问，状态码：%d" % (obj['web_url'], response.status_code))
         return obj
-
-    obj['web_html'] = response.content
+    response.encoding = 'gbk'
+    obj['web_html'] = response.text
     obj['company'] = tools.get_company_name(obj['web_html'])
     obj['position'] = tools.get_work_position(obj['web_html'])
     obj['work_city'] = tools.get_work_citys(obj['web_html'])
@@ -71,10 +74,19 @@ def get_all_page_of_job():
     global first_url
     response = requests.get(first_url)
     if response.status_code != 200:
+        log.error("网址（%s）无法访问，状态码：%d" % (first_url, response.status_code))
         return None
-    objs = get_tile_and_link_lists(response.content)
+    response.encoding = 'gbk'
+    objs = get_tile_and_link_lists(response.text)
     objs = list(map(handle_job_message, objs))
     return objs
+
+
+def init():
+    objs = get_all_page_of_job()
+    for obj in objs:
+        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农水利学院官网', obj['position'],
+                      obj['release_time'], obj['web_html'])
 
 
 if __name__ == '__main__':
