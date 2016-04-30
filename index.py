@@ -21,7 +21,7 @@ def main():
     # 水利学院
     #fetchs.append(fetch.slxy.init)
     # 公管学院
-    # fetchs.append(fetch.gongguan.init)
+    fetchs.append(fetch.gongguan.init)
     # 信息学院
     #fetchs.append(fetch.info.init)
     for func in fetchs:

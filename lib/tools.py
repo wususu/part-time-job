@@ -8,6 +8,7 @@
 
 
 from bs4 import BeautifulSoup
+from config.citys import citys
 import re
 import time
 import random
@@ -72,11 +73,16 @@ def get_work_citys(html):
     :return:
     """
     html = BeautifulSoup(html, "html.parser").get_text()
-    r = re.findall(r'(工作地[点]?[:：]?){1}(可选：)?(.*)', html)
-    if r and r[0][2]:
-        return re.split(r'[#,、，\s]', r[0][2])
-    return []
+    # r = re.findall(r'(工作地[点]?[:：]?){1}(可选：)?(.*)', html)
+    # if r and r[0][2]:
+    #     return re.split(r'[#,、，\s]', r[0][2])
+    # return []
 
+    r = []
+    for city in citys:
+        if html.find(city) != -1:
+            r.append(city)
+    return r
 
 def get_work_position(html):
     """
