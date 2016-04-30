@@ -20,7 +20,9 @@ def handle_company_name_use_black_data(objs, index):
     :return:
     """
     for obj in objs:
-        if re.search(r'([随着]|[成立]|[负责])+.*?([公司]|[企业]|[集团]|[公司]|[研发中心])+', obj[index]):
+        if re.search(r'([随着]|[成立]|[负责])+.*?([公司]|[企业]|[集团]|[公司]|[研发中心]|[推进中心]|[传媒])+', obj[index]):
+            continue
+        if re.search(r'\.[\s ]*公司', obj[index]):
             continue
         return obj[index]
 
@@ -34,22 +36,31 @@ def get_company_name(html):
     :return:
     """
     html = BeautifulSoup(html, "html.parser").get_text()
-    r = re.findall(r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*?有限公司)', html)
+    r = re.findall(r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*隶?属于)?(.*\.\s+)?(.+?有限公司)', html)
 
+    if r:
+        return handle_company_name_use_black_data(r, 4)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.+?研发中心)', html)
     if r:
         return handle_company_name_use_black_data(r, 2)
 
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?研发中心)', html)
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?是?(.+?集团)', html)
     if r:
         return handle_company_name_use_black_data(r, 2)
 
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?是?(.*?集团)', html)
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*\.\s+)?(.+?公司)', html)
+    if r:
+        return handle_company_name_use_black_data(r, 3)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.+?推进中心)', html)
     if r:
         return handle_company_name_use_black_data(r, 2)
 
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?公司)', html)
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.+?传媒)', html)
     if r:
         return handle_company_name_use_black_data(r, 2)
+
 
     return "未识别的公司"
 
@@ -82,6 +93,7 @@ def get_real_time(time_str):
     :param time_str:
     :return:
     """
+    time_str = time_str.replace('.', '-')
     time_str = time_str.replace('年', '-')
     time_str = time_str.replace('月', '-')
     time_str = time_str.replace('日', '')

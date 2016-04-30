@@ -78,7 +78,7 @@ def get_all_page_html():
         return None
 
     messages = get_message_title_and_url_list(html)
-    
+
     page = 2
     form_data = get_search_form(html)
     while page < 50:

@@ -3,6 +3,7 @@
 
 from lib.logging_lib import log
 import fetch.scautiu
+import fetch.arts
 import traceback
 
 
@@ -10,7 +11,10 @@ def main():
     log.info("爬虫启动！")
 
     fetchs = []
-    fetchs.append(fetch.scautiu.init)
+    # 电子工程
+    #fetchs.append(fetch.scautiu.init)
+    # 艺术学院
+    # fetchs.append(fetch.arts.init)
 
     for func in fetchs:
         try:
