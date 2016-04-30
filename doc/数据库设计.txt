@@ -11,8 +11,18 @@ create table if not exists jobs(
     status tinyint(1) not null comment '状态，0为显示，1为不显示，2为删除',
     web_html text not null comment '抓取的页面html代码',
     release_time datetime not null comment '发布时间',
+    token char(32) not null comment '唯一标示，用于代替id，hash web_url',
     create_time datetime not null comment '创建时间',
     update_time timestamp not null comment '修改时间',
     primary key(id),
     unique(web_url)
 )ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='兼职信息表';
+
+create table if not exists companys(
+    id int(11) auto_increment,
+    company_name varchar(50) not null comment '企业名字',
+    token char(32) not null comment '代替id，hash企业名字',
+    create_time datetime not null comment '创建时间',
+    primary key(id),
+    unique(company_name)
+)ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='企业表';
