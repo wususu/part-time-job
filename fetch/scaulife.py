@@ -64,8 +64,12 @@ def get_message_jobs(url):
 
 def fetch():
     result=[]
-    infos = get_message_title_and_url_list(1)
+    n=get_page_num()
 
+    import csv
+    f=open("life.csv","w")
+
+    writer=csv.writer(f)
     def tmp(info):
         title,link,release_time=info
         url=url_host+link
@@ -78,10 +82,15 @@ def fetch():
         info['authentication']=0
         info.update(get_message_jobs(url))
         result.append(info)
-        print(info['title'],info['release_time'])
+        writer.writerow((info['title'],info['company'],info['release_time'],info['work_city'],info['web_url']))
+        print(info['title'],info['company'],info['release_time'])
 
-    p=Pool(10)
-    p.map(tmp,infos)
+    for i in range(1,n+1):
+        infos = get_message_title_and_url_list(i)
+        p=Pool(20)
+        p.map(tmp,infos)
+
+    f.close()
     return result
 
 if __name__ == '__main__':

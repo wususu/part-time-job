@@ -55,23 +55,21 @@ def get_company_name(html):
     :param html: 一段字符串
     :return:
     """
+    company=""
     html = BeautifulSoup(html, "html.parser").get_text()
-    r = re.findall(r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*?有限公司)', html)
+    iden_strs=(r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*?有限公司)', 
+               r'(.*\d+年?的)?(.*[：，,。]+)?(.*?研发中心)'    , 
+               r'(.*\d+年?的)?(.*[：，,。]+)?是?(.*?集团)'    ,
+               r'(.*\d+年?的)?(.*[：，,。]+)?(.*?公司)'
+            ) 
 
-    if r:
-        return handle_company_name_use_black_data(r, 2)
-
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?研发中心)', html)
-    if r:
-        return handle_company_name_use_black_data(r, 2)
-
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?是?(.*?集团)', html)
-    if r:
-        return handle_company_name_use_black_data(r, 2)
-
-    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*?公司)', html)
-    if r:
-        return handle_company_name_use_black_data(r, 2)
+    for iden_str in iden_strs:
+        r = re.findall(iden_str, html)
+        if r:
+            company=handle_company_name_use_black_data(r, 2)
+            n=company.find('"')
+            if n!=-1:
+                return company[n+1:]
 
     return "未识别的公司"
 
