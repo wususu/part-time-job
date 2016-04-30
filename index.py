@@ -6,6 +6,7 @@ import fetch.scautiu
 import fetch.arts
 import fetch.slxy
 import fetch.gongguan
+import fetch.info
 import traceback
 
 
@@ -21,6 +22,8 @@ def main():
     #fetchs.append(fetch.slxy.init)
     # 公管学院
     # fetchs.append(fetch.gongguan.init)
+    # 信息学院
+    #fetchs.append(fetch.info.init)
     for func in fetchs:
         try:
             func()

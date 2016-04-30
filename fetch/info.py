@@ -11,7 +11,8 @@
 
 
 from bs4 import BeautifulSoup
-from lib import tools
+from lib import tools, dao
+from lib.logging_lib import log
 import requests
 
 
@@ -53,10 +54,11 @@ def get_all_page_of_job():
     global message_url
     messages = []
     page = 1
-    while page <= 5:
+    while page <= 1:
         url = message_url % (page - 1) * 20
         response = requests.get(url)
         if response.status_code != 200:
+            log.error("网址（%s）无法访问，状态码：%d" % (url, response.status_code))
             continue
         objs = get_title_and_link_list(response.content)
         messages.extend(objs)
@@ -75,8 +77,10 @@ def handle_job_message(obj):
     :param obj:
     :return:
     """
+    tools.sleep_some_time()
     response = requests.get(obj['web_url'])
     if response.status_code != 200:
+        log.error("网址（%s）无法访问，状态码：%d" % (obj['web_url'], response.status_code))
         return obj
 
     obj['web_html'] = response.content
@@ -84,6 +88,13 @@ def handle_job_message(obj):
     obj['position'] = tools.get_work_position(obj['web_html'])
     obj['work_city'] = tools.get_work_citys(obj['web_html'])
     return obj
+
+
+def init():
+    objs = get_all_page_of_job()
+    for obj in objs:
+        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农水利学院官网', obj['position'],
+                      obj['release_time'], obj['web_html'])
 
 
 if __name__ == '__main__':
