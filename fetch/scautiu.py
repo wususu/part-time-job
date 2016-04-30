@@ -11,7 +11,8 @@
 
 
 from bs4 import BeautifulSoup
-from lib import tools
+from lib import tools, dao
+from lib.logging_lib import log
 import requests
 
 
@@ -77,14 +78,15 @@ def get_all_page_html():
         return None
 
     messages = get_message_title_and_url_list(html)
-
+    
     page = 2
     form_data = get_search_form(html)
-    while(page < 50):
+    while page < 50:
         form_data['__EVENTTARGET'] = 'ctl00$cph_content_temp$DataPager1$ctl01$ctl0%d' % (page - 1)
         response = requests.post(first_html_url, form_data)
 
         if response.status_code != 200:
+            log.error("网址（%s）无法访问，状态码：%d" % (first_html_url, response.status_code))
             page += 1
             continue
 
@@ -109,9 +111,12 @@ def handle_job_message(obj):
     :param obj:
     :return:
     """
+    # 休眠一会
+    tools.sleep_some_time()
 
     response = requests.get(obj['web_url'])
     if response.status_code != 200:
+        log.error("网址（%s）无法访问，状态码：%d" % (obj['web_url'], response.status_code))
         return obj
 
     obj['web_html'] = response.content
@@ -120,6 +125,13 @@ def handle_job_message(obj):
     obj['work_city'] = tools.get_work_citys(obj['web_html'])
 
     return obj
+
+
+def init():
+    objs = get_all_page_html()
+    for obj in objs:
+        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农水利学院官网', obj['position'],
+                      obj['release_time'], obj['web_html'])
 
 
 def test():

@@ -9,6 +9,8 @@
 
 from bs4 import BeautifulSoup
 import re
+import time
+import random
 
 
 def handle_company_name_use_black_data(objs, index):
@@ -18,7 +20,7 @@ def handle_company_name_use_black_data(objs, index):
     :return:
     """
     for obj in objs:
-        if re.search(r'([随着]|[成立])+.*?([公司]|[企业]|[集团]|[公司]|[研发中心])+', obj[index]):
+        if re.search(r'([随着]|[成立]|[负责])+.*?([公司]|[企业]|[集团]|[公司]|[研发中心])+', obj[index]):
             continue
         return obj[index]
 
@@ -73,6 +75,40 @@ def get_work_position(html):
     """
     return []
 
+
+def get_real_time(time_str):
+    """
+    获取标准的时间
+    :param time_str:
+    :return:
+    """
+    time_str = time_str.replace('年', '-')
+    time_str = time_str.replace('月', '-')
+    time_str = time_str.replace('日', '')
+    time_str = time_str.replace('时', '：')
+    time_str = time_str.replace('分', '：')
+    time_str = time_str.replace('秒', '')
+
+    attrs = time_str.split(' ')
+    t = attrs[0]
+    if not t:
+        t = attrs[1]
+
+    arrs = t.split("-")
+    if len(arrs) != 3:
+        t = time.strftime("%Y-") + t
+
+    return t + " 00:00:00"
+
+
+def sleep_some_time():
+    """
+    随机休眠几秒
+    :return:
+    """
+    t = random.random() / 2 * 10
+    print("休眠" + str(t) + "秒")
+    time.sleep(t)
 
 # with open('../debug_html/2.html', 'r') as fp:
 #     print(get_work_citys(fp.read()))
