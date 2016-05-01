@@ -1,9 +1,10 @@
 import re
 from bs4 import BeautifulSoup
 import requests
-from part_time_and_work.fetch import tools
+from lib import tools,dao
+from lib.logging_lib import log
 
-final_data = []
+
 url_first = 'http://zyhjxy.scau.edu.cn/news.php?a=lists&id=31'
 url_work = 'http://zyhjxy.scau.edu.cn/'
 url_page = 'http://zyhjxy.scau.edu.cn/news.php?m=home&c=news&a=lists&m=home&c=news&id=31&p='
@@ -11,6 +12,9 @@ url_page = 'http://zyhjxy.scau.edu.cn/news.php?m=home&c=news&a=lists&m=home&c=ne
 
 def Get_html(url):
     req = requests.get(url)
+    if req.status_code != 200:
+        log.error("网址（%s）无法访问，状态码：%d" % (url, req.status_code))
+        return None
     html=req.content
     return html
 
@@ -71,30 +75,47 @@ def get_job_url(url):
     return url_list
 
 
-def get_all_data():
+def handle_all_data(url):
+    """
+    获取每一条信息
+    :param url:
+    :return:
+    """
+    tools.sleep_some_time()
     zhaopin_data = {}
+    html = Get_html(url)
+    zhaopin_data['web_url'] = url
+    zhaopin_data['web_html'] = html
+    zhaopin_data['title'] = get_title(html)
+    zhaopin_data['release_time'] = tools.get_real_time(get_date(html))
+    zhaopin_data['company'] = tools.get_company_name(html)
+    zhaopin_data['position'] = tools.get_work_position(html)
+    zhaopin_data['work_city'] = tools.get_work_citys(html)
+    zhaopin_data['message_source'] = '华农资环学院官网'
+    print(zhaopin_data['title'],zhaopin_data['release_time'],zhaopin_data['message_source'],zhaopin_data['company'])
+    return zhaopin_data
+
+
+def get_all_data():
+    final_data = []
     html = Get_html(url_first)
     all_url_list = get_pages(html)
-    x=0
     for url in all_url_list:
-        x+=1
-        html = Get_html(url)
-        zhaopin_data['web_url'] = url
-        zhaopin_data['web_html'] = html
-        zhaopin_data['title'] = get_title(html)
-        zhaopin_data['release_time'] = get_date(html)
-        zhaopin_data['company'] = tools.get_company_name(html)
-        zhaopin_data['position'] = tools.get_work_position(html)
-        zhaopin_data['work_city'] = tools.get_work_citys(html)
-        zhaopin_data['message_source'] = ''
-        zhaopin_data['job_type'] = ''
-        print(x,zhaopin_data['title'],zhaopin_data['company'],zhaopin_data['release_time'],zhaopin_data['web_url'])
-        final_data.append(zhaopin_data)
+        final_data.append(handle_all_data(url))
+    return final_data
+
+
+
+def init():
+    objs = get_all_data()
+    for obj in objs:
+        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], obj['message_source'], obj['position'],
+                      obj['release_time'], obj['web_html'])
 
 
 def text():
-    get_all_data()
-    print(len(final_data))
+
+    print(len(get_all_data()))
 
 
 if __name__ == '__main__':
