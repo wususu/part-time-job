@@ -10,13 +10,15 @@
 """
 
 url_hire = "http://xy.scau.edu.cn/caineng/xnyxy/Article/ShowClass.asp?ClassID=182&page={0}"
-url_host = "http://xy.scau.edu.cn/"
+url_host = "http://xy.scau.edu.cn"
 
 from bs4 import BeautifulSoup
 import requests
-from tools import *
+from lib import tools
+from lib import dao
 from gevent import monkey;monkey.patch_socket()
 from gevent.pool import Pool
+
 def get_message_title_and_url_list(page):
     """
     提取第page页的兼职信息列表的信息标题、跳转地址和发布时间
@@ -24,7 +26,7 @@ def get_message_title_and_url_list(page):
     :return:
     """
     url=url_hire.format(page)
-    html=get_html(url)
+    html=tools.get_html(url)
     result = []
     soup = BeautifulSoup(html, "html.parser")
     a_s = soup.select("table a")
@@ -38,7 +40,7 @@ def get_message_title_and_url_list(page):
 
 def get_page_num():
     url=url_hire.format(1)
-    html=get_html_t(url)
+    html=tools.get_html_t(url,"gbk")
     page_re=re.findall(r"page\=(\d+)",html)
     return int(page_re[-1])
 
@@ -47,11 +49,11 @@ def get_message_jobs(url):
     获取招聘信息
     """
     info={}
-    html = get_html(url)
-    company_name = get_company_name(html)
-    work_city = get_work_citys(html)
-    work_position = get_work_position(html)
-    release_time=get_release_time(html)
+    html = tools.get_html_t(url,"gbk")
+    company_name = tools.get_company_name(html)
+    work_city = tools.get_work_citys(html)
+    work_position = tools.get_work_position(html)
+    release_time= tools.get_release_time(html)
 
     info['release_time']=release_time
     info['web_html']=html
@@ -65,7 +67,8 @@ def fetch():
     result=[]
     infos = get_message_title_and_url_list(1)
 
-    def tmp(info):
+    for info in infos:
+        tools.sleep_some_time()
         title,link=info
         url=url_host+link
         info={}
@@ -76,12 +79,15 @@ def fetch():
         info['authentication']=0
         info.update(get_message_jobs(url))
         result.append(info)
-        print(text_filter(info['title']),info['release_time'])
-    
-    p=Pool(10)
-    p.map(tmp,infos)
+        print(info['title'],info['company'],info['release_time'])
+        
     return result
 
+def init():
+    infos = fetch()
+    for info in infos:
+        dao.add_a_job(info['title'], info['company'], info['web_url'], info['work_city'], info['message_source'], info['position'],
+                      info['release_time'], info['web_html'])
 if __name__ == '__main__':
     fetch()
     # print(get_page_num())

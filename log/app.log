@@ -1,0 +1,14 @@
+app_log      2016-05-01 15:23:21,645 level-INFO     爬虫启动！
+app_log      2016-05-01 15:23:51,889 level-INFO     爬虫结束！
+app_log      2016-05-01 15:27:44,620 level-INFO     爬虫启动！
+app_log      2016-05-01 15:28:15,932 level-ERROR    写入数据库失败（错误类型：(1406, "Data too long for column 'company' at row 1")）， 信息地址：http://jobs.51job.com/guangzhou-thq/75437314.html?s=0
+app_log      2016-05-01 15:28:15,974 level-ERROR    写入数据库失败（错误类型：(1406, "Data too long for column 'company' at row 1")）， 信息地址：http://xy.scau.edu.cn//linxue/linxuejob/show.asp?id=847
+app_log      2016-05-01 15:28:16,115 level-INFO     爬虫结束！
+app_log      2016-05-01 15:29:52,785 level-INFO     爬虫启动！
+app_log      2016-05-01 15:29:58,230 level-INFO     爬虫结束！
+app_log      2016-05-01 15:33:45,038 level-INFO     爬虫启动！
+app_log      2016-05-01 15:33:48,169 level-INFO     爬虫结束！
+app_log      2016-05-01 15:34:20,079 level-INFO     爬虫启动！
+app_log      2016-05-01 15:34:42,043 level-INFO     爬虫结束！
+app_log      2016-05-01 15:38:02,131 level-INFO     爬虫启动！
+app_log      2016-05-01 15:38:55,488 level-INFO     爬虫结束！

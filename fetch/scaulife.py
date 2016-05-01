@@ -15,7 +15,8 @@ url_host = "http://life.scau.edu.cn"
 from bs4 import BeautifulSoup
 import requests
 import re
-from tools import *
+from lib import tools
+from lib import dao
 from gevent import monkey;monkey.patch_socket()
 from gevent.pool import Pool
 
@@ -26,7 +27,7 @@ def get_message_title_and_url_list(page):
     :return:
     """
     url=url_hire.format(page)
-    html=get_html(url)
+    html=tools.get_html(url)
     result = []
     soup = BeautifulSoup(html, "html.parser")
     lis = soup.select(".nav-news-list li")
@@ -41,7 +42,7 @@ def get_message_title_and_url_list(page):
 
 def get_page_num():
     url=url_hire.format(1)
-    html=get_html_t(url)
+    html=tools.get_html_t(url)
     page_re=re.findall(r"navId=52\">(\d+)</a>",html)
     return int(page_re[-1])
 
@@ -50,10 +51,10 @@ def get_message_jobs(url):
     获取招聘信息
     """
     info={}
-    html = get_html(url)
-    company_name = get_company_name(html)
-    work_city = get_work_citys(html)
-    work_position = get_work_position(html)
+    html = tools.get_html_t(url)
+    company_name = tools.get_company_name(html)
+    work_city = tools.get_work_citys(html)
+    work_position = tools.get_work_position(html)
 
     info['web_html']=html
     info['company']=company_name
@@ -64,34 +65,30 @@ def get_message_jobs(url):
 
 def fetch():
     result=[]
-    n=get_page_num()
+    # n=get_page_num()
+    infos = get_message_title_and_url_list(12)
 
-    import csv
-    f=open("life.csv","w")
-
-    writer=csv.writer(f)
-    def tmp(info):
+    for info in infos:
+        tools.sleep_some_time()
         title,link,release_time=info
         url=url_host+link
         info={}
         info['title']=title
         info['web_url']=url
         info['release_time']=release_time
-        info['message_source']="生命科学学院官网"
         info['job_type']=0
         info['authentication']=0
         info.update(get_message_jobs(url))
         result.append(info)
-        writer.writerow((info['title'],info['company'],info['release_time'],info['work_city'],info['web_url']))
         print(info['title'],info['company'],info['release_time'])
 
-    for i in range(1,n+1):
-        infos = get_message_title_and_url_list(i)
-        p=Pool(20)
-        p.map(tmp,infos)
-
-    f.close()
     return result
+
+def init():
+    infos = fetch()
+    for info in infos:
+        dao.add_a_job(info['title'], info['company'], info['web_url'], info['work_city'], "生命科学学院官网", info['position'],
+                      info['release_time'], info['web_html'])
 
 if __name__ == '__main__':
     fetch()
