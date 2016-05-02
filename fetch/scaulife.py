@@ -62,25 +62,26 @@ def get_message_jobs(url):
     return info
 
 
-def fetch():
-    result=[]
-    # n=get_page_num()
-    infos = get_message_title_and_url_list(12)
-
-    for info in infos:
+def handle_job_info(info):
         tools.sleep_some_time()
         title,link,release_time=info
         url=url_host+link
         info={}
         info['title']=title
         info['web_url']=url
-        info['release_time']=release_time
+        info['release_time']=tools.get_real_time(release_time)
         info['job_type']=0
         info['authentication']=0
         info.update(get_message_jobs(url))
-        result.append(info)
         print(info['title'],info['company'],info['release_time'])
+        return info
 
+def fetch():
+    # n=get_page_num()
+    result=[]
+    infos = get_message_title_and_url_list(12)
+
+    result=map(handle_job_info,infos)
     return result
 
 def init():

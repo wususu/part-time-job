@@ -52,7 +52,7 @@ def get_message_jobs(url):
     work_position = tools.get_work_position(html)
     release_time=get_release_time(html)
 
-    info['release_time']=release_time
+    info['release_time']=tools.get_real_time(release_time)
     info['web_html']=html
     info['company']=company_name
     info['work_city']=work_city

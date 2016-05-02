@@ -71,7 +71,7 @@ def fetch():
         info={}
         info['title']=title
         info['web_url']=url
-        info['release_time']=release_time
+        info['release_time']=tools.get_real_time(release_time)
         info['message_source']="动物科学学院官网"
         info['job_type']=0
         info['authentication']=0
