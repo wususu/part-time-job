@@ -16,8 +16,7 @@ from bs4 import BeautifulSoup
 import requests
 from lib import tools
 from lib import dao
-from gevent import monkey;monkey.patch_socket()
-from gevent.pool import Pool
+from lib.coffeesign_tools import *
 
 def get_message_title_and_url_list(page):
     """
@@ -26,7 +25,7 @@ def get_message_title_and_url_list(page):
     :return:
     """
     url=url_hire.format(page)
-    html=tools.get_html(url)
+    html=get_html(url)
     result = []
     soup = BeautifulSoup(html, "html.parser")
     a_s = soup.select("table a")
@@ -40,7 +39,7 @@ def get_message_title_and_url_list(page):
 
 def get_page_num():
     url=url_hire.format(1)
-    html=tools.get_html_t(url,"gbk")
+    html=get_html_t(url,"gbk")
     page_re=re.findall(r"page\=(\d+)",html)
     return int(page_re[-1])
 
@@ -49,11 +48,11 @@ def get_message_jobs(url):
     获取招聘信息
     """
     info={}
-    html = tools.get_html_t(url,"gbk")
-    company_name = tools.get_company_name(html)
+    html = get_html_t(url,"gbk")
+    company_name = get_company_name(html)
     work_city = tools.get_work_citys(html)
     work_position = tools.get_work_position(html)
-    release_time= tools.get_release_time(html)
+    release_time= get_release_time(html)
 
     info['release_time']=release_time
     info['web_html']=html

@@ -13,41 +13,7 @@ from config.position import positions
 import re
 import time
 import random
-import requests
 
-def text_filter(text):
-    filter_strs=["\xa0","\ufffd","\u200b","\u2022"]
-    for filter_str in filter_strs:
-        text=text.replace(filter_str,"")
-    return text
-
-def get_html(url):
-    response = requests.get(url)
-    if response.status_code != 200:
-        log.error("网址（%s）无法访问，状态码：%d" % (url, response.status_code))
-    return response.content
-
-def get_html_t(url,coding="utf-8"):
-    response = requests.get(url)
-    if response.status_code != 200:
-        log.error("网址（%s）无法访问，状态码：%d" % (url, response.status_code))
-
-    content=str(response.content)
-    r=re.findall("charset=(\w+)\"",content)
-    if r:
-        coding=r[0].lower()
-    response.encoding=coding
-    return response.text
-
-def get_release_time(html):
-    html = BeautifulSoup(html, "html.parser").get_text()
-    r=re.findall(r"(\d{4}\-\d+\-\d+)",html)
-    if r:
-        return r[0]
-
-    r=re.findall(r"(\d+\-\d+)发布",html)
-    if r:
-        return r[0]
 
 def handle_company_name_use_black_data(objs, index):
     """
@@ -72,25 +38,34 @@ def get_company_name(html):
     :return:
     """
     html = BeautifulSoup(html, "html.parser").get_text()
-    iden_strs=(
-               (r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*隶?属于)?(.*\.\s+)?(.+?有限公司)',4),
-               (r'(.*\d+年?的)?(.*[：，,。]+)?(.+?研发中心)',2),
-               (r'(.*\d+年?的)?(.*[：，,。]+)?是?(.+?集团)',2),
-               (r'(.*\d+年?的)?(.*[：，,。]+)?(.*\.\s+)?(.+?公司)',3), 
-               (r'(.*\d+年?的)?(.*[：，,。]+)?(.+?推进中心)', 2),
-               (r'(.*\d+年?的)?(.*[：，,。]+)?(.+?传媒)' ,2)
-            )
-    for iden_str,n in iden_strs:
-        r = re.findall(iden_str, html)
-        if r:
-            company=handle_company_name_use_black_data(r, n)
-            n=company.find('"')
-            if n!=-1:
-                return company[n+1:]
+    r = re.findall(r'(.*\d+年{0,1}的)?(.*[：，,。]+)?(.*隶?属于)?(.*\.\s+)?(.+?有限公司)', html)
 
-            return company
+    if r:
+        return handle_company_name_use_black_data(r, 4)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.+?研发中心)', html)
+    if r:
+        return handle_company_name_use_black_data(r, 2)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?是?(.+?集团)', html)
+    if r:
+        return handle_company_name_use_black_data(r, 2)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.*\.\s+)?(.+?公司)', html)
+    if r:
+        return handle_company_name_use_black_data(r, 3)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.+?推进中心)', html)
+    if r:
+        return handle_company_name_use_black_data(r, 2)
+
+    r = re.findall(r'(.*\d+年?的)?(.*[：，,。]+)?(.+?传媒)', html)
+    if r:
+        return handle_company_name_use_black_data(r, 2)
+
+
     return "未识别的公司"
-# 
+
 
 def get_work_citys(html):
     """
