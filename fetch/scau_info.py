@@ -93,7 +93,7 @@ def handle_job_message(obj):
 def init():
     objs = get_all_page_of_job()
     for obj in objs:
-        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农水利学院官网', obj['position'],
+        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农数学与信息软件学院官网', obj['position'],
                       obj['release_time'], obj['web_html'])
 
 

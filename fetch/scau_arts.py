@@ -90,7 +90,7 @@ def get_all_page_of_work():
 def init():
     objs = get_all_page_of_work()
     for obj in objs:
-        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农水利学院官网', obj['position'],
+        dao.add_a_job(obj['title'], obj['company'], obj['web_url'], obj['work_city'], '华农艺术学院官网', obj['position'],
                       obj['release_time'], obj['web_html'])
 
 
