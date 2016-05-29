@@ -47,11 +47,8 @@ def add_a_job(job_title, job_company, job_url, job_city, job_message_source, job
         insert into jobs(title, company, position, web_url, work_city, message_source, job_type,
         authentication, status, web_html, release_time, token, create_time)
         values(%s, %s, %s, %s, %s, %s, 0, 0, 0, %s, %s, %s, now());
-<<<<<<< HEAD
     """
-=======
-          """
->>>>>>> origin/banana
+
     try:
         insert_id = db_lib.insert(sql, [job_title, job_company, job_position, job_url, job_city, job_message_source,
                                         web_html, job_release_time, token])
