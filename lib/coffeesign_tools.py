@@ -2,7 +2,7 @@ from lib import tools
 import requests
 from bs4 import BeautifulSoup
 import re
-from lib import logging_lib
+from lib.logging_lib import log
 def text_filter(text):
     filter_strs=["\xa0","\ufffd","\u200b","\u2022"]
     for filter_str in filter_strs:
