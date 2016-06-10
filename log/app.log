@@ -1,2 +1,10 @@
 app_log      2016-05-29 20:27:00,049 level-INFO     爬虫启动！
 app_log      2016-05-29 20:27:48,119 level-INFO     爬虫结束！
+app_log      2016-06-10 11:29:13,557 level-INFO     爬虫启动！
+app_log      2016-06-10 11:35:58,543 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=634
+app_log      2016-06-10 11:38:05,766 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=630
+app_log      2016-06-10 11:40:12,998 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=624
+app_log      2016-06-10 11:42:20,230 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=623
+app_log      2016-06-10 11:44:27,462 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=622
+app_log      2016-06-10 11:46:34,694 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=617
+app_log      2016-06-10 11:48:41,926 level-ERROR    写入数据库失败（错误类型：(2003, "Can't connect to MySQL server on '192.168.249.78' ([Errno 110] Connection timed out)")）， 信息地址：http://202.116.162.1:9000/content.php?id=398&news_id=613
